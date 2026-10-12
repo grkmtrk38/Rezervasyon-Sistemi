@@ -1,0 +1,155 @@
+@model RezervasyonSistemi.Models.Rezervasyon
+
+@{
+    ViewData["Title"] = "Yeni Rezervasyon Oluştur";
+}
+
+<!-- Flatpickr CSS CDN -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-7">
+        <div class="card shadow border-0 rounded-3">
+            <div class="card-header bg-success text-white py-3">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-calendar-plus me-2"></i>Yeni Rezervasyon Oluştur</h5>
+            </div>
+            <div class="card-body p-4">
+                <form asp-action="Create">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                    <!-- Cascading Dropdowns: Kaynak Türü & Kaynak -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label fw-semibold">Kaynak Türü</label>
+                            <select id="kaynakTipiSelect" class="form-select" asp-items="ViewBag.KaynakTipleri">
+                                <option value="">-- Kaynak Türü Seçiniz --</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="KaynakId" class="form-label fw-semibold">Rezerve Edilecek Kaynak</label>
+                            <select asp-for="KaynakId" id="kaynakSelect" class="form-select">
+                                <option value="">-- Önce Kaynak Türü Seçiniz --</option>
+                            </select>
+                            <span asp-validation-for="KaynakId" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <!-- Başlangıç & Bitiş Tarihleri (Flatpickr Entegreli) -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="BaslangicTarihi" class="form-label fw-semibold">Başlangıç Tarihi ve Saati</label>
+                            <input asp-for="BaslangicTarihi" id="BaslangicTarihi" class="form-control bg-white" type="text" placeholder="Tarih ve Saat Seçiniz" />
+                            <span asp-validation-for="BaslangicTarihi" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="BitisTarihi" class="form-label fw-semibold">Bitiş Tarihi ve Saati</label>
+                            <input asp-for="BitisTarihi" id="BitisTarihi" class="form-control bg-white" type="text" placeholder="Tarih ve Saat Seçiniz" />
+                            <span asp-validation-for="BitisTarihi" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <!-- Açıklama -->
+                    <div class="mb-3">
+                        <label asp-for="Aciklama" class="form-label fw-semibold">Toplantı / Kullanım Amacı Açıklaması</label>
+                        <textarea asp-for="Aciklama" class="form-control" rows="3" placeholder="Örn: Haftalık Değerlendirme Toplantısı"></textarea>
+                        <span asp-validation-for="Aciklama" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a asp-action="Index" class="btn btn-outline-secondary">İptal / Listeye Dön</a>
+                        <button type="submit" class="btn btn-success fw-bold px-4">Rezervasyonu Oluştur</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+
+    <!-- Flatpickr JS ve Türkçe Dil Desteği CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/tr.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            // Flatpickr Nesnelerini Başlat
+            var startPicker = flatpickr("#BaslangicTarihi", {
+                enableTime: true,
+                dateFormat: "Y-m-d H:i",
+                time_24hr: true,
+                locale: "tr",
+                minuteIncrement: 15
+            });
+
+            var endPicker = flatpickr("#BitisTarihi", {
+                enableTime: true,
+                dateFormat: "Y-m-d H:i",
+                time_24hr: true,
+                locale: "tr",
+                minuteIncrement: 15
+            });
+
+            // Seçilen Kaynağa Ait Dolu Tarih/Saat Dilimlerini Çek ve Takvimde Kilitle
+            function updateDoluTarihler(kaynakId) {
+                if (kaynakId && kaynakId > 0) {
+                    $.getJSON('/Rezervasyons/GetDoluTarihler', { kaynakId: kaynakId }, function (data) {
+                        var disableRanges = [];
+                        if (data && data.length > 0) {
+                            $.each(data, function (index, item) {
+                                disableRanges.push({
+                                    from: item.from,
+                                    to: item.to
+                                });
+                            });
+                        }
+                        startPicker.set('disable', disableRanges);
+                        endPicker.set('disable', disableRanges);
+                    });
+                } else {
+                    startPicker.set('disable', []);
+                    endPicker.set('disable', []);
+                }
+            }
+
+            // Kaynak Türü değiştiğinde bağımlı (Cascading) Kaynak listesini doldur
+            $('#kaynakTipiSelect').change(function () {
+                var selectedTip = $(this).val();
+                var $kaynakSelect = $('#kaynakSelect');
+
+                // Kaynak sıfırlandığı için kilitli tarihleri temizle
+                startPicker.set('disable', []);
+                endPicker.set('disable', []);
+
+                if (selectedTip) {
+                    $kaynakSelect.empty().append('<option value="">Yükleniyor...</option>');
+
+                    $.getJSON('/Rezervasyons/GetKaynaklarByTip', { tip: selectedTip }, function (data) {
+                        $kaynakSelect.empty().append('<option value="">-- Kaynak Seçiniz --</option>');
+                        if (data && data.length > 0) {
+                            $.each(data, function (index, item) {
+                                $kaynakSelect.append($('<option>', {
+                                    value: item.id,
+                                    text: item.ad
+                                }));
+                            });
+                        } else {
+                            $kaynakSelect.empty().append('<option value="">Bu türde aktif kaynak bulunamadı</option>');
+                        }
+                    }).fail(function () {
+                        $kaynakSelect.empty().append('<option value="">Kaynaklar yüklenirken hata oluştu</option>');
+                    });
+                } else {
+                    $kaynakSelect.empty().append('<option value="">-- Önce Kaynak Türü Seçiniz --</option>');
+                }
+            });
+
+            // Kaynak seçildiğinde o kaynağın dolu tarihlerini çek ve kilitle
+            $('#kaynakSelect').change(function () {
+                var selectedKaynakId = $(this).val();
+                updateDoluTarihler(selectedKaynakId);
+            });
+        });
+    </script>
+}

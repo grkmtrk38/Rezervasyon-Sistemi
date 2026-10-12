@@ -1,0 +1,573 @@
+/* =============================================================
+   1. CSS DEĞİŞKENLERİ (GLOBAL THEME VARIABLES)
+   ============================================================= */
+:root {
+  --bg-main: #f1f5f9;
+  --card-bg: #ffffff;
+  --sidebar-bg: #ffffff;
+  --topbar-bg: #ffffff;
+  --text-main: #1e293b;
+  --text-muted: #64748b;
+  --border-color: #e2e8f0;
+  --table-hover: #f8fafc;
+  --sidebar-width: 260px;
+  --topbar-height: 70px;
+  --card-radius: 12px;
+  --accent-color: #2563eb;
+}
+
+[data-theme="dark"] {
+  --bg-main: #0f172a;
+  --card-bg: #1e293b;
+  --sidebar-bg: #1e293b;
+  --topbar-bg: #1e293b;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --border-color: #334155;
+  --table-hover: #334155;
+  --accent-color: #3b82f6;
+}
+
+/* =============================================================
+   2. TEMEL SAYFA & İSKELET (FLEXBOX LAYOUT) STİLLERİ
+   ============================================================= */
+html, body {
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  width: 100%;
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  overflow-x: hidden !important;
+  overflow-y: auto;
+}
+
+/* Ana Sarmalayıcı (App Wrapper) */
+#app-wrapper {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden !important;
+}
+
+/* Sol Menü (Sidebar) */
+#sidebar-wrapper {
+  width: var(--sidebar-width);
+  background-color: var(--sidebar-bg);
+  border-right: 1px solid var(--border-color);
+  flex-shrink: 0;
+  min-height: 100vh;
+  transition: margin-left 0.3s ease, width 0.3s ease, background-color 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  z-index: 1000;
+}
+
+#app-wrapper.toggled #sidebar-wrapper {
+  margin-left: calc(-1 * var(--sidebar-width));
+}
+
+.sidebar-brand {
+  height: var(--topbar-height);
+  display: flex;
+  align-items: center;
+  padding: 0 1.5rem;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--accent-color);
+  border-bottom: 1px solid var(--border-color);
+  text-decoration: none;
+}
+
+.sidebar-nav {
+  padding: 1.5rem 1rem;
+  list-style: none;
+  margin: 0;
+  flex-grow: 1;
+}
+
+.sidebar-nav .nav-label {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  padding: 0 0.75rem 0.5rem;
+  letter-spacing: 0.05em;
+}
+
+.sidebar-nav .nav-item {
+  margin-bottom: 0.35rem;
+}
+
+.sidebar-nav .nav-link {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  color: var(--text-main);
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.sidebar-nav .nav-link i {
+  font-size: 1.2rem;
+  margin-right: 0.85rem;
+  color: var(--text-muted);
+  transition: color 0.2s ease;
+}
+
+.sidebar-nav .nav-link:hover {
+  background-color: var(--table-hover);
+  color: var(--accent-color);
+}
+
+.sidebar-nav .nav-link:hover i {
+  color: var(--accent-color);
+}
+
+.sidebar-nav .nav-link.active {
+  background-color: #ebf5ff;
+  color: #2563eb;
+  font-weight: 600;
+}
+
+[data-theme="dark"] .sidebar-nav .nav-link.active {
+  background-color: #1e3a8a;
+  color: #60a5fa;
+}
+
+.sidebar-nav .nav-link.active i {
+  color: inherit;
+}
+
+/* Sağ Sayfa İçerik Alanı (Sticky Footer Hedefi) */
+#page-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  min-width: 0;
+  min-height: 100vh;
+  overflow-x: hidden !important;
+}
+
+/* Üst Bar (Topbar) */
+#topbar {
+  height: var(--topbar-height);
+  background-color: var(--topbar-bg);
+  border-bottom: 1px solid var(--border-color);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 1.5rem;
+  flex-shrink: 0;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.topbar-toggle-btn {
+  background: none;
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  font-size: 1.25rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.topbar-toggle-btn:hover {
+  background-color: var(--table-hover);
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.theme-toggle-btn {
+  background: none;
+  border: 1px solid var(--border-color);
+  color: var(--text-main);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.theme-toggle-btn:hover {
+  background-color: var(--table-hover);
+  transform: rotate(15deg);
+}
+
+/* Ana İçerik Konteynırı */
+.main-container {
+  padding: 1.75rem;
+  flex: 1 0 auto;
+  width: 100%;
+  box-sizing: border-box;
+  overflow-x: hidden !important;
+}
+
+/* Grid satır kayma düzeltmesi */
+.row {
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+}
+
+/* =============================================================
+   3. KART YAPILARI & AYDINLIK / KARANLIK MOD KONTRAST DÜZELTMELERİ
+   ============================================================= */
+/* Standart renksiz kartlar */
+.hero-card,
+.card:not(.bg-primary):not(.bg-success):not(.bg-warning):not(.bg-danger):not(.bg-info):not(.bg-dark) {
+  background-color: var(--card-bg) !important;
+  color: var(--text-main);
+  border: 1px solid var(--border-color) !important;
+  border-radius: var(--card-radius) !important;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05) !important;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.card-header:not(.bg-primary):not(.bg-success):not(.bg-warning):not(.bg-danger):not(.bg-dark) {
+  border-bottom: 1px solid var(--border-color) !important;
+  background-color: transparent !important;
+  color: var(--text-main);
+}
+
+/* Renkli İstatistik Kartları (bg-primary, bg-success, bg-warning vb.) renklerini korur */
+.card.bg-primary, .card.bg-success, .card.bg-danger, .card.bg-info, .card.bg-dark {
+  border-radius: var(--card-radius) !important;
+}
+
+/* Mikro Etkileşimler (Hover Elevation & Smooth Transition) */
+.hover-elevate {
+  transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+.hover-elevate:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.08) !important;
+}
+
+[data-theme="dark"] .hover-elevate:hover {
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4) !important;
+}
+
+.transition-all,
+.table tbody tr {
+  transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease !important;
+}
+
+
+/* Alt Bilgi (Footer - Sayfa Altına Sabitlenen Yapı) */
+.footer {
+  position: static !important;
+  margin-top: auto !important;
+  flex-shrink: 0 !important;
+  background-color: var(--topbar-bg);
+  border-top: 1px solid var(--border-color);
+  padding: 1rem 1.5rem;
+  color: var(--text-muted) !important;
+  font-size: 0.875rem;
+  width: 100%;
+  box-sizing: border-box;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+/* Kaydırılabilir Tablo Kapsayıcısı */
+.scrollable-table-wrapper {
+  max-height: 500px;
+  overflow-y: auto;
+  overflow-x: auto;
+  position: relative;
+  border-radius: 0.375rem;
+}
+
+.scrollable-table-wrapper table thead th {
+  position: sticky;
+  top: 0;
+  background-color: var(--bg-main);
+  color: var(--text-main);
+  z-index: 2;
+  border-bottom: 2px solid var(--border-color);
+}
+
+/* =============================================================
+   4. SOFT BADGES (HAP GÖRÜNÜMÜ & YUMUŞAK DURUM ROZETLERİ)
+   ============================================================= */
+.badge.bg-success-subtle {
+  background-color: #d1e7dd !important;
+  color: #0f5132 !important;
+  border: 1px solid #badbcc !important;
+}
+
+.badge.bg-danger-subtle {
+  background-color: #f8d7da !important;
+  color: #842029 !important;
+  border: 1px solid #f5c2c7 !important;
+}
+
+.badge.bg-warning-subtle {
+  background-color: #fff3cd !important;
+  color: #664d03 !important;
+  border: 1px solid #ffecb5 !important;
+}
+
+.badge.bg-secondary-subtle {
+  background-color: #e2e3e5 !important;
+  color: #41464b !important;
+  border: 1px solid #d3d6d8 !important;
+}
+
+.badge.bg-primary-subtle {
+  background-color: #cfe2ff !important;
+  color: #084298 !important;
+  border: 1px solid #b6d4fe !important;
+}
+
+.badge.bg-info-subtle {
+  background-color: #cff4fc !important;
+  color: #055160 !important;
+  border: 1px solid #b6effb !important;
+}
+
+[data-theme="dark"] .badge.bg-success-subtle {
+  background-color: rgba(25, 135, 84, 0.25) !important;
+  color: #4ade80 !important;
+  border-color: rgba(74, 222, 128, 0.3) !important;
+}
+
+[data-theme="dark"] .badge.bg-danger-subtle {
+  background-color: rgba(220, 53, 69, 0.25) !important;
+  color: #f87171 !important;
+  border-color: rgba(248, 113, 113, 0.3) !important;
+}
+
+[data-theme="dark"] .badge.bg-warning-subtle {
+  background-color: rgba(255, 193, 7, 0.25) !important;
+  color: #fbbf24 !important;
+  border-color: rgba(251, 191, 36, 0.3) !important;
+}
+
+[data-theme="dark"] .badge.bg-secondary-subtle {
+  background-color: rgba(108, 117, 125, 0.25) !important;
+  color: #cbd5e1 !important;
+  border-color: rgba(203, 213, 225, 0.3) !important;
+}
+
+[data-theme="dark"] .badge.bg-primary-subtle {
+  background-color: rgba(37, 99, 235, 0.25) !important;
+  color: #60a5fa !important;
+  border-color: rgba(96, 165, 250, 0.3) !important;
+}
+
+[data-theme="dark"] .badge.bg-info-subtle {
+  background-color: rgba(13, 202, 240, 0.25) !important;
+  color: #38bdf8 !important;
+  border-color: rgba(56, 189, 248, 0.3) !important;
+}
+
+/* =============================================================
+   5. SEÇİCİ KORUMALI METİN RENGİ VE KARANLIK MOD EZMELERİ
+   (Butonları, Rozetleri ve Form Elemanlarını Bozmayan Yapı)
+   ============================================================= */
+
+/* Dark Mode Genel Metin Ezmeleri (Butonlar, Rozetler ve İnputlar Hariç!) */
+[data-theme="dark"] h1:not(.btn):not(.badge),
+[data-theme="dark"] h2:not(.btn):not(.badge),
+[data-theme="dark"] h3:not(.btn):not(.badge),
+[data-theme="dark"] h4:not(.btn):not(.badge),
+[data-theme="dark"] h5:not(.btn):not(.badge),
+[data-theme="dark"] h6:not(.btn):not(.badge),
+[data-theme="dark"] p:not(.btn):not(.badge),
+[data-theme="dark"] label:not(.btn):not(.badge),
+[data-theme="dark"] dt, [data-theme="dark"] dd,
+[data-theme="dark"] th, [data-theme="dark"] td {
+  color: var(--text-main);
+}
+
+[data-theme="dark"] .text-dark {
+  color: #f8fafc !important;
+}
+
+[data-theme="dark"] .text-muted,
+[data-theme="dark"] .text-secondary {
+  color: #94a3b8 !important;
+}
+
+/* =============================================================
+   6. TABLO, MODAL, DATATABLES VE FULLCALENDAR ÖZEL ALANLARI
+   ============================================================= */
+/* Tablolar (Dark Mode) */
+[data-theme="dark"] table,
+[data-theme="dark"] .table {
+  color: #f8fafc;
+  border-color: #334155;
+}
+
+[data-theme="dark"] table th,
+[data-theme="dark"] table td,
+[data-theme="dark"] .table th,
+[data-theme="dark"] .table td {
+  border-color: #334155;
+}
+
+[data-theme="dark"] .table-striped>tbody>tr:nth-of-type(odd)>* {
+  background-color: #1e293b !important;
+  color: #f8fafc;
+}
+
+[data-theme="dark"] .table-hover>tbody>tr:hover>* {
+  background-color: #334155 !important;
+  color: #f8fafc;
+}
+
+/* Modallar (Açılır Pencereler) */
+[data-theme="dark"] .modal-content {
+  background-color: #1e293b !important;
+  color: #f8fafc !important;
+  border: 1px solid #334155 !important;
+}
+
+[data-theme="dark"] .modal-header {
+  background-color: #1e293b !important;
+  border-bottom: 1px solid #334155 !important;
+  color: #f8fafc !important;
+}
+
+[data-theme="dark"] .modal-body {
+  background-color: #1e293b !important;
+  color: #f8fafc !important;
+}
+
+[data-theme="dark"] .modal-footer {
+  background-color: #0f172a !important;
+  border-top: 1px solid #334155 !important;
+}
+
+/* DataTables & Arama İnputları */
+table.dataTable {
+  color: var(--text-main) !important;
+}
+
+table.dataTable tbody tr {
+  background-color: var(--card-bg) !important;
+  color: var(--text-main) !important;
+}
+
+table.dataTable.table-striped>tbody>tr:nth-of-type(odd)>* {
+  background-color: var(--table-hover) !important;
+  color: var(--text-main) !important;
+}
+
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_filter,
+.dataTables_wrapper .dataTables_info,
+.dataTables_wrapper .dataTables_processing,
+.dataTables_wrapper .dataTables_paginate {
+  color: var(--text-main) !important;
+}
+
+.dataTables_wrapper .dataTables_filter input,
+.dataTables_length select {
+  background-color: var(--card-bg) !important;
+  color: var(--text-main) !important;
+  border: 1px solid var(--border-color) !important;
+  border-radius: 0.375rem;
+}
+
+/* Form Elemanları (Input, Select, Textarea) */
+.form-control, .form-select {
+  background-color: var(--card-bg);
+  color: var(--text-main);
+  border-color: var(--border-color);
+}
+
+[data-theme="dark"] .form-control,
+[data-theme="dark"] .form-select {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+  border-color: #334155 !important;
+}
+
+[data-theme="dark"] .form-control:focus,
+[data-theme="dark"] .form-select:focus {
+  background-color: #0f172a !important;
+  color: #f8fafc !important;
+}
+
+/* FullCalendar Butonları & UI Koruması */
+.fc .fc-button-primary {
+  background-color: var(--accent-color) !important;
+  border-color: var(--accent-color) !important;
+  color: #ffffff !important;
+}
+
+.fc .fc-button-primary:hover {
+  opacity: 0.9;
+}
+
+.fc .fc-button-primary:disabled {
+  opacity: 0.6;
+}
+
+[data-theme="dark"] .fc-theme-standard td,
+[data-theme="dark"] .fc-theme-standard th {
+  border-color: #334155 !important;
+}
+
+[data-theme="dark"] .fc-col-header-cell-cushion,
+[data-theme="dark"] .fc-daygrid-day-number {
+  color: #f8fafc !important;
+}
+
+/* =============================================================
+   7. ÖZELLEŞTİRİLMİŞ KAYDIRMA ÇUBUKLARI (CUSTOM SCROLLBARS)
+   ============================================================= */
+/* Firefox standart scrollbar desteği */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: #cbd5e1 transparent;
+}
+
+[data-theme="dark"] * {
+  scrollbar-color: #475569 transparent;
+}
+
+/* Webkit (Chrome, Edge, Safari, Opera) Scrollbar Özelleştirmeleri */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #cbd5e1;
+  border-radius: 10px;
+  transition: background-color 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background-color: #94a3b8;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background-color: #475569;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background-color: #64748b;
+}
+
+html, body { height: auto !important; min-height: 100vh; overflow-y: auto !important; overflow-x: hidden !important; }

@@ -1,0 +1,49 @@
+@model RezervasyonSistemi.Models.Rezervasyon
+
+@{
+    ViewData["Title"] = "Rezervasyon İptal Et";
+}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-7">
+        <div class="card shadow border-0 rounded-3">
+            <div class="card-header bg-danger text-white py-3">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-exclamation-triangle me-2"></i>Rezervasyon İptal Onayı</h5>
+            </div>
+            <div class="card-body p-4">
+                <p class="fs-5 text-dark fw-semibold mb-4">
+                    Bu rezervasyonu iptal etmek istediğinize emin misiniz?
+                </p>
+                <div class="alert alert-warning">
+                    <i class="bi bi-info-circle me-1"></i> İptal edilen rezervasyon veritabanından tamamen silinmeyecek, durumu <strong>"İptal Edildi"</strong> olarak güncellenecek ve takvimde kırmızı renkle arşivlenecektir.
+                </div>
+
+                <dl class="row mb-0">
+                    <dt class="col-sm-4 text-muted">Personel:</dt>
+                    <dd class="col-sm-8 fw-bold">@(Model.Personel != null ? $"{Model.Personel.Ad} {Model.Personel.Soyad}" : "-")</dd>
+
+                    <dt class="col-sm-4 text-muted">Kaynak:</dt>
+                    <dd class="col-sm-8 fw-bold">@(Model.Kaynak != null ? Model.Kaynak.Ad : "-")</dd>
+
+                    <dt class="col-sm-4 text-muted">Başlangıç Tarihi:</dt>
+                    <dd class="col-sm-8">@Model.BaslangicTarihi.ToString("dd.MM.yyyy HH:mm")</dd>
+
+                    <dt class="col-sm-4 text-muted">Bitiş Tarihi:</dt>
+                    <dd class="col-sm-8">@Model.BitisTarihi.ToString("dd.MM.yyyy HH:mm")</dd>
+
+                    <dt class="col-sm-4 text-muted">Açıklama:</dt>
+                    <dd class="col-sm-8">@(string.IsNullOrEmpty(Model.Aciklama) ? "-" : Model.Aciklama)</dd>
+                </dl>
+            </div>
+            <div class="card-footer bg-light p-3 d-flex justify-content-between">
+                <a asp-action="Index" class="btn btn-outline-secondary">Listeye Dön</a>
+                <form asp-action="Delete">
+                    <input type="hidden" asp-for="Id" />
+                    <button type="submit" class="btn btn-danger fw-bold">
+                        Rezervasyonu İptal Et
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

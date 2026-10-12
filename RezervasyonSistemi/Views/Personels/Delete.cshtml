@@ -1,0 +1,35 @@
+@model RezervasyonSistemi.Models.Personel
+
+@{
+    ViewData["Title"] = "Personel Sil";
+}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6">
+        <div class="card shadow border-0 rounded-3">
+            <div class="card-header bg-danger text-white py-3">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-exclamation-triangle me-2"></i>Personel Silme Onayı</h5>
+            </div>
+            <div class="card-body p-4">
+                <p class="fs-5 text-dark fw-semibold mb-4">
+                    Bu personel kaydını silmek istediğinize emin misiniz?
+                </p>
+
+                <dl class="row mb-0">
+                    <dt class="col-sm-4 text-muted">Ad Soyad:</dt>
+                    <dd class="col-sm-8 fw-bold">@Model.Ad @Model.Soyad</dd>
+
+                    <dt class="col-sm-4 text-muted">Birim:</dt>
+                    <dd class="col-sm-8">@Model.Birim</dd>
+                </dl>
+            </div>
+            <div class="card-footer bg-light p-3 d-flex justify-content-between">
+                <a asp-action="Index" class="btn btn-outline-secondary">İptal / Listeye Dön</a>
+                <form asp-action="Delete">
+                    <input type="hidden" asp-for="Id" />
+                    <button type="submit" class="btn btn-danger fw-bold">Kaydı Sil</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

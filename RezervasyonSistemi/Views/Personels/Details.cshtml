@@ -1,0 +1,28 @@
+@model RezervasyonSistemi.Models.Personel
+
+@{
+    ViewData["Title"] = "Personel Detayı";
+}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6">
+        <div class="card shadow border-0 rounded-3">
+            <div class="card-header bg-info text-white py-3">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-person-lines-fill me-2"></i>Personel Detay Bilgileri</h5>
+            </div>
+            <div class="card-body p-4">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4 text-muted">Ad Soyad:</dt>
+                    <dd class="col-sm-8 fw-bold fs-5 text-dark">@Model.Ad @Model.Soyad</dd>
+
+                    <dt class="col-sm-4 text-muted">Birim / Müdürlük:</dt>
+                    <dd class="col-sm-8"><span class="badge bg-info text-dark">@Model.Birim</span></dd>
+                </dl>
+            </div>
+            <div class="card-footer bg-light p-3 d-flex justify-content-between">
+                <a asp-action="Index" class="btn btn-outline-secondary">Listeye Dön</a>
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary fw-bold">Düzenle</a>
+            </div>
+        </div>
+    </div>
+</div>

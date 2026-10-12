@@ -1,0 +1,209 @@
+@model RezervasyonSistemi.Models.ViewModels.DashboardViewModel
+
+@{
+    ViewData["Title"] = "Ana Sayfa";
+    bool isAuthenticated = User.Identity != null && User.Identity.IsAuthenticated;
+}
+
+@if (!isAuthenticated)
+{
+    <!-- Herkese Açık Tanıtım Sayfası (Landing Hero) -->
+    <div class="p-5 mb-4 hero-card rounded-3 shadow-sm border position-relative overflow-hidden hover-elevate">
+        <div class="container-fluid py-4">
+            <span class="badge bg-primary-subtle text-primary border border-primary-subtle px-3 py-2 fs-6 mb-3 rounded-pill fw-bold">🏢 Şirket İçi Kurumsal Altyapı</span>
+            <h1 class="display-4 fw-bold mb-3">Toplantı Salonu & Araç Rezervasyon Sistemi</h1>
+            <p class="col-md-9 fs-5 text-secondary mb-4">
+                Bu sistem, kurum içi toplantı odası ve araç kaynağı yönetimini uçtan uca kolaylaştırmak, çakışmaları engellemek ve rezervasyon süreçlerini şeffaf, güvenli ve düzenli bir şekilde yürütmek üzere tasarlanmıştır.
+            </p>
+            <div class="d-flex gap-3">
+                <a asp-controller="Account" asp-action="Login" class="btn btn-primary btn-lg fw-bold px-5 shadow-sm">
+                    🔑 Sisteme Giriş Yap
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Özellik Kartları (3 Adet Bilgi Kartı) -->
+    <div class="row g-4 my-4">
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm rounded-3 hover-elevate">
+                <div class="card-body p-4 text-center">
+                    <div class="feature-icon bg-primary bg-gradient text-white rounded-circle mb-3 mx-auto d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; font-size: 28px;">
+                        ⚡
+                    </div>
+                    <h5 class="fw-bold mb-2">Hızlı Planlama & Takvim</h5>
+                    <p class="text-secondary small mb-0">
+                        FullCalendar entegrasyonu ve Flatpickr dinamik kitleme sayesinde çakışmasız anlık saat ve gün planlaması yapabilirsiniz.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm rounded-3 hover-elevate">
+                <div class="card-body p-4 text-center">
+                    <div class="feature-icon bg-success bg-gradient text-white rounded-circle mb-3 mx-auto d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; font-size: 28px;">
+                        🔒
+                    </div>
+                    <h5 class="fw-bold mb-2">Kapalı Devre Güvenlik</h5>
+                    <p class="text-secondary small mb-0">
+                        Admin onay mekanizması, rol bazlı veri sahipliği yetkilendirmesi ve ephemeral koruma ile şirket içi kapalı devre güvenlik.
+                    </p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card h-100 border-0 shadow-sm rounded-3 hover-elevate">
+                <div class="card-body p-4 text-center">
+                    <div class="feature-icon bg-info bg-gradient text-white rounded-circle mb-3 mx-auto d-flex align-items-center justify-content-center" style="width: 60px; height: 60px; font-size: 28px;">
+                        📊
+                    </div>
+                    <h5 class="fw-bold mb-2">Detaylı Yönetim & Rapor</h5>
+                    <p class="text-secondary small mb-0">
+                        Soft-delete iptal yapısı, DataTables Türkçe aramaları ve Excel/CSV dışa aktarım imkanı ile gelişmiş yönetim.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+else
+{
+    <!-- Giriş Yapmış Kullanıcılar İçin Dashboard Panel -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold mb-1">📊 Genel Durum Özeti</h2>
+            <p class="text-secondary mb-0">Sistemdeki aktif kaynak ve rezervasyon metrikleri</p>
+        </div>
+        <div>
+            <a asp-controller="Rezervasyons" asp-action="Takvim" class="btn btn-primary btn-lg fw-bold shadow-sm me-2">
+                🗓️ Takvime Git
+            </a>
+            <a asp-controller="Rezervasyons" asp-action="Create" class="btn btn-warning btn-lg fw-bold text-dark shadow-sm">
+                ➕ Yeni Rezervasyon
+            </a>
+        </div>
+    </div>
+
+    <!-- İstatistik Kartları -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-3 bg-primary text-white hover-elevate">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-white-50 text-uppercase fw-bold mb-1" style="font-size: 0.8rem;">Toplam Kaynak</h6>
+                            <h2 class="fw-bold mb-0 text-white">@Model.ToplamKaynakSayisi</h2>
+                        </div>
+                        <div class="fs-1 opacity-75">📦</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-3 bg-success text-white hover-elevate">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-white-50 text-uppercase fw-bold mb-1" style="font-size: 0.8rem;">Aktif Rezervasyon</h6>
+                            <h2 class="fw-bold mb-0 text-white">@Model.ToplamAktifRezervasyonSayisi</h2>
+                        </div>
+                        <div class="fs-1 opacity-75">✅</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-3 bg-warning text-dark hover-elevate">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-dark-50 text-uppercase fw-bold mb-1" style="font-size: 0.8rem;">Bugünkü Rezervasyon</h6>
+                            <h2 class="fw-bold mb-0 text-dark">@Model.BugunkuRezervasyonSayisi</h2>
+                        </div>
+                        <div class="fs-1 opacity-75">📅</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card border-0 shadow-sm rounded-3 bg-danger text-white hover-elevate">
+                <div class="card-body p-4">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-white-50 text-uppercase fw-bold mb-1" style="font-size: 0.8rem;">İptal Edilenler</h6>
+                            <h2 class="fw-bold mb-0 text-white">@Model.IptalEdilenRezervasyonSayisi</h2>
+                        </div>
+                        <div class="fs-1 opacity-75">🚫</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Yaklaşan Rezervasyonlar Tablosu -->
+    <div class="card border-0 shadow-sm rounded-3">
+        <div class="card-header py-3">
+            <h5 class="fw-bold mb-0">⏳ Yaklaşan İlk 5 Rezervasyon</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0">
+                    <thead>
+                        <tr>
+                            <th>Personel</th>
+                            <th>Kaynak</th>
+                            <th>Başlangıç Tarihi</th>
+                            <th>Bitiş Tarihi</th>
+                            <th>Durum</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (Model.YaklasanRezervasyonlar != null && Model.YaklasanRezervasyonlar.Any())
+                        {
+                            foreach (var item in Model.YaklasanRezervasyonlar)
+                            {
+                                string pTamAd = item.Personel != null ? $"{item.Personel.Ad} {item.Personel.Soyad}" : "-";
+                                <tr class="transition-all">
+                                    <td class="fw-semibold">
+                                        <div class="d-flex align-items-center">
+                                            <img src="https://ui-avatars.com/api/?name=@(System.Net.WebUtility.UrlEncode(pTamAd))&background=random&color=fff&rounded=true&size=32" class="rounded-circle me-2" alt="Avatar" width="32" height="32" />
+                                            <span>@pTamAd</span>
+                                        </div>
+                                    </td>
+                                    <td><span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-1 fw-bold">@(item.Kaynak != null ? item.Kaynak.Ad : "-")</span></td>
+                                    <td>@item.BaslangicTarihi.ToString("dd.MM.yyyy HH:mm")</td>
+                                    <td>@item.BitisTarihi.ToString("dd.MM.yyyy HH:mm")</td>
+                                    <td>
+                                        @if (item.Durum == "Beklemede")
+                                        {
+                                            <span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-3 py-1 fw-bold">Beklemede</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1 fw-bold">Onaylandı</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+                        else
+                        {
+                            <tr>
+                                <td colspan="5" class="text-center py-5">
+                                    <div class="d-flex flex-column align-items-center justify-content-center">
+                                        <i class="bi bi-inbox display-4 text-secondary opacity-50 mb-2"></i>
+                                        <h6 class="fw-bold mb-1">Yaklaşan Rezervasyon Bulunmuyor</h6>
+                                        <p class="text-muted small mb-0">Yakın zamanda planlanmış herhangi bir toplantı oda veya araç kullanımı yok.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+}

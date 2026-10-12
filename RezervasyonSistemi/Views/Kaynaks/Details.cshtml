@@ -1,0 +1,43 @@
+@model RezervasyonSistemi.Models.Kaynak
+
+@{
+    ViewData["Title"] = "Kaynak Detayı";
+}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6">
+        <div class="card shadow border-0 rounded-3">
+            <div class="card-header bg-info text-white py-3">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-info-circle me-2"></i>Kaynak Detay Bilgileri</h5>
+            </div>
+            <div class="card-body p-4">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4 text-muted">Kaynak Adı:</dt>
+                    <dd class="col-sm-8 fw-bold fs-5 text-dark">@Model.Ad</dd>
+
+                    <dt class="col-sm-4 text-muted">Kaynak Tipi:</dt>
+                    <dd class="col-sm-8"><span class="badge bg-secondary">@Model.Tip</span></dd>
+
+                    <dt class="col-sm-4 text-muted">Kapasite:</dt>
+                    <dd class="col-sm-8">@Model.Kapasite Kişilik / Adet</dd>
+
+                    <dt class="col-sm-4 text-muted">Durum:</dt>
+                    <dd class="col-sm-8">
+                        @if (Model.Aktif)
+                        {
+                            <span class="badge bg-success">Aktif</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">Pasif</span>
+                        }
+                    </dd>
+                </dl>
+            </div>
+            <div class="card-footer bg-light p-3 d-flex justify-content-between">
+                <a asp-action="Index" class="btn btn-outline-secondary">Listeye Dön</a>
+                <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary fw-bold">Düzenle</a>
+            </div>
+        </div>
+    </div>
+</div>

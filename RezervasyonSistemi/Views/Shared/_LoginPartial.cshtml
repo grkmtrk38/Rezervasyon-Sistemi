@@ -1,0 +1,36 @@
+@using Microsoft.AspNetCore.Identity
+@using RezervasyonSistemi.Models
+@inject SignInManager<ApplicationUser> SignInManager
+@inject UserManager<ApplicationUser> UserManager
+
+<ul class="navbar-nav align-items-center">
+@if (SignInManager.IsSignedIn(User))
+{
+    var currentUser = await UserManager.GetUserAsync(User);
+    var nameDisplay = currentUser != null ? $"{currentUser.Ad} {currentUser.Soyad}" : User.Identity?.Name;
+    <li class="nav-item me-3">
+        <span class="navbar-text text-dark fw-semibold">
+            👤 @nameDisplay
+            @if (User.IsInRole("Admin"))
+            {
+                <span class="badge bg-danger ms-1">Admin</span>
+            }
+            else
+            {
+                <span class="badge bg-secondary ms-1">Kullanıcı</span>
+            }
+        </span>
+    </li>
+    <li class="nav-item">
+        <form class="form-inline" asp-controller="Account" asp-action="Logout" method="post">
+            <button type="submit" class="btn btn-sm btn-outline-danger fw-bold">Çıkış Yap</button>
+        </form>
+    </li>
+}
+else
+{
+    <li class="nav-item">
+        <a class="btn btn-primary btn-sm px-4 fw-bold" asp-controller="Account" asp-action="Login">Giriş Yap</a>
+    </li>
+}
+</ul>

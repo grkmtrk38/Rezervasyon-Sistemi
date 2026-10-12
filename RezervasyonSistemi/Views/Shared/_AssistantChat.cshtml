@@ -1,0 +1,171 @@
+@* Akıllı Asistan Canlı Sohbet Paneli *@
+<button id="assistant-chat-toggle" class="btn btn-primary rounded-circle shadow-lg" title="Akıllı Asistan" type="button">
+    <i class="bi bi-robot"></i>
+</button>
+
+<div id="assistant-chat-panel" class="assistant-chat-panel d-none shadow-lg">
+    <!-- Header -->
+    <div class="chat-header">
+        <div class="d-flex align-items-center gap-2">
+            <div class="chat-logo-container bg-white rounded-circle p-1 d-flex align-items-center justify-content-center">
+                <i class="bi bi-robot"></i>
+            </div>
+            <div>
+                <h6 class="mb-0 fw-bold chat-title">Akıllı Asistan</h6>
+                <span class="d-flex align-items-center gap-1 chat-status">
+                    <span class="rounded-circle chat-status-dot"></span> Aktif
+                </span>
+            </div>
+        </div>
+        <button type="button" id="assistant-chat-close" class="btn-close btn-close-white" aria-label="Kapat"></button>
+    </div>
+
+    <!-- Messages Area -->
+    <div id="chatHistory" class="chat-messages-area">
+        <!-- Intro Message -->
+        <div class="chat-message assistant">
+            Merhaba! Ben yapay zeka destekli rezervasyon asistanıyım. Doğal dilde rezervasyon taleplerinizi gerçekleştirebilirim.<br/><br/>
+            <strong>Örnekler:</strong>
+            <ul class="mb-0 ps-3 mt-1">
+                <li><em>"Yarın sabah 10'da 5 kişilik projeksiyonlu oda ayarla"</em></li>
+                <li><em>"Yarın saat 14'te VIP makam toplantısı planla"</em></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Quick Suggestion Buttons -->
+    <div class="chat-suggestions">
+        <button type="button" class="btn btn-sm btn-outline-secondary suggestion-btn" data-text="Yarın öğleden sonra boş oda bul">Yarın için boş oda bul</button>
+        <button type="button" class="btn btn-sm btn-outline-secondary suggestion-btn" data-text="Yarın saat 14'te VIP makam toplantısı planla">VIP toplantısı planla</button>
+        <button type="button" class="btn btn-sm btn-outline-secondary suggestion-btn" data-text="Bugün 10 kişilik salon ayarla">10 kişilik salon ayarla</button>
+    </div>
+
+    <!-- Footer / Input Form -->
+    <div class="chat-footer">
+        <form id="assistant-chat-form" class="d-flex gap-2">
+            <input type="text" id="chatInput" class="form-control form-control-sm chat-input" placeholder="Mesajınızı buraya yazın..." autocomplete="off" />
+            <button type="submit" id="chatSendBtn" class="btn btn-primary btn-sm rounded-circle send-btn d-flex align-items-center justify-content-center">
+                <i class="bi bi-send-fill"></i>
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var chatToggle = document.getElementById('assistant-chat-toggle');
+    var chatClose = document.getElementById('assistant-chat-close');
+    var chatPanel = document.getElementById('assistant-chat-panel');
+    var chatForm = document.getElementById('assistant-chat-form');
+    var chatInput = document.getElementById('chatInput');
+    var chatHistory = document.getElementById('chatHistory');
+    var suggestionBtns = document.querySelectorAll('.suggestion-btn');
+
+    // Panel Açma/Kapama
+    if (chatToggle && chatPanel) {
+        chatToggle.addEventListener('click', function () {
+            chatPanel.classList.toggle('d-none');
+            scrollToBottom();
+            if (!chatPanel.classList.contains('d-none') && chatInput) {
+                chatInput.focus();
+            }
+        });
+    }
+
+    if (chatClose && chatPanel) {
+        chatClose.addEventListener('click', function () {
+            chatPanel.classList.add('d-none');
+        });
+    }
+
+    // Öneri butonları tıklama desteği
+    suggestionBtns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+            var text = btn.getAttribute('data-text');
+            if (text && chatInput) {
+                chatInput.value = text;
+                chatInput.focus();
+            }
+        });
+    });
+
+    function scrollToBottom() {
+        if (chatHistory) {
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+        }
+    }
+
+    // Form Gönderme
+    if (chatForm) {
+        chatForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+            sendMessage();
+        });
+    }
+
+    async function sendMessage() {
+        if (!chatInput || !chatHistory) return;
+
+        var text = chatInput.value.trim();
+        if (!text) return;
+
+        // Inputu temizle
+        chatInput.value = '';
+
+        // Kullanıcı mesajını arayüze ekle (sağda hizalı: user sınıfı)
+        var userMsgDiv = document.createElement('div');
+        userMsgDiv.className = 'chat-message user';
+        userMsgDiv.textContent = text;
+        chatHistory.appendChild(userMsgDiv);
+        scrollToBottom();
+
+        // Yazıyor... animasyonunu ekle (solda hizalı: assistant ve typing-placeholder sınıfı)
+        var typingDiv = document.createElement('div');
+        typingDiv.className = 'chat-message assistant typing-placeholder';
+        typingDiv.innerHTML = '<span class="spinner-border spinner-border-sm text-primary me-2" role="status"></span>Meram AI yazıyor...';
+        chatHistory.appendChild(typingDiv);
+        scrollToBottom();
+
+        try {
+            var response = await fetch('/Chat/AskAi', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ message: text })
+            });
+
+            var data = await response.json();
+
+            // Animasyonu kaldır
+            var placeholder = chatHistory.querySelector('.typing-placeholder');
+            if (placeholder) {
+                placeholder.remove();
+            }
+
+            // Asistan yanıtını arayüze ekle (solda hizalı: assistant sınıfı)
+            var aiMsgDiv = document.createElement('div');
+            aiMsgDiv.className = 'chat-message assistant';
+            if (data.success) {
+                aiMsgDiv.innerHTML = data.reply;
+            } else {
+                aiMsgDiv.innerHTML = '<span class="text-danger"><i class="bi bi-exclamation-triangle-fill me-1"></i>Hata oluştu.</span>';
+            }
+            chatHistory.appendChild(aiMsgDiv);
+            scrollToBottom();
+        } catch (error) {
+            // Animasyonu kaldır
+            var placeholder = chatHistory.querySelector('.typing-placeholder');
+            if (placeholder) {
+                placeholder.remove();
+            }
+
+            var errorDiv = document.createElement('div');
+            errorDiv.className = 'chat-message assistant';
+            errorDiv.innerHTML = '<span class="text-danger"><i class="bi bi-x-circle-fill me-1"></i>Bağlantı hatası.</span>';
+            chatHistory.appendChild(errorDiv);
+            scrollToBottom();
+        }
+    }
+});
+</script>

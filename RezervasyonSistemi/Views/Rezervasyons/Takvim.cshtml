@@ -1,0 +1,192 @@
+@{
+    ViewData["Title"] = "Rezervasyon Takvimi";
+}
+
+<style>
+    /* FullCalendar Etkinlik İkon & Badge Stilleri */
+    .fc-daygrid-event {
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        border-radius: 6px !important;
+        margin: 2px 0 !important;
+        padding: 2px 4px !important;
+        cursor: pointer !important;
+    }
+    .fc-event-title {
+        font-weight: 500 !important;
+    }
+    .fc-more-link {
+        font-weight: bold !important;
+        color: var(--accent-color) !important;
+        font-size: 0.82rem !important;
+        padding: 2px 4px !important;
+    }
+    .calendar-event-badge {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        gap: 4px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+</style>
+
+<div class="card shadow border-0 rounded-3 mt-3">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-3">
+        <h5 class="mb-0 fw-bold"><i class="bi bi-calendar-week me-2"></i>Sistem Rezervasyon Takvimi</h5>
+        <a asp-action="Create" class="btn btn-light btn-sm fw-bold shadow-sm">
+            <i class="bi bi-plus-lg me-1"></i> Yeni Rezervasyon
+        </a>
+    </div>
+    <div class="card-body p-4">
+        <div id="calendar"></div>
+    </div>
+</div>
+
+<!-- Rezervasyon Detay Modal (Penceresi) -->
+<div class="modal fade" id="eventDetailModal" tabindex="-1" aria-labelledby="eventDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 12px;">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title fw-bold" id="eventDetailModalLabel">
+                    <i class="bi bi-calendar-event me-2"></i>Rezervasyon Detayı
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Kapat"></button>
+            </div>
+            <div class="modal-body p-4">
+                <table class="table table-borderless align-middle mb-0">
+                    <tbody>
+                        <tr>
+                            <th class="text-secondary" style="width:35%">Personel:</th>
+                            <td id="modalPersonel" class="fw-bold fs-6"></td>
+                        </tr>
+                        <tr>
+                            <th class="text-secondary">Kaynak:</th>
+                            <td><span id="modalKaynak" class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-1 fs-6"></span></td>
+                        </tr>
+                        <tr>
+                            <th class="text-secondary">Başlangıç Tarihi:</th>
+                            <td id="modalBaslangic" class="fw-semibold"></td>
+                        </tr>
+                        <tr>
+                            <th class="text-secondary">Bitiş Tarihi:</th>
+                            <td id="modalBitis" class="fw-semibold"></td>
+                        </tr>
+                        <tr>
+                            <th class="text-secondary">Durum:</th>
+                            <td id="modalDurum"></td>
+                        </tr>
+                        <tr>
+                            <th class="text-secondary">Açıklama:</th>
+                            <td id="modalAciklama" class="text-muted small"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer bg-light border-top-0 d-flex justify-content-between">
+                <a id="modalDetailBtn" href="#" class="btn btn-outline-info btn-sm fw-bold">
+                    <i class="bi bi-info-circle me-1"></i> Detay Sayfası
+                </a>
+                <div>
+                    <a id="modalEditBtn" href="#" class="btn btn-primary btn-sm fw-bold d-none">
+                        <i class="bi bi-pencil me-1"></i> Düzenle
+                    </a>
+                    <button type="button" class="btn btn-secondary btn-sm fw-bold" data-bs-dismiss="modal">Kapat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- FullCalendar CDN -->
+    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
+            var eventModal = new bootstrap.Modal(document.getElementById('eventDetailModal'));
+
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                locale: 'tr',
+                dayMaxEvents: 3,
+                dayMaxEventRows: true,
+                eventDisplay: 'list-item',
+                buttonText: {
+                    today: 'Bugün',
+                    month: 'Ay',
+                    week: 'Hafta',
+                    day: 'Gün',
+                    list: 'Liste'
+                },
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                events: '/Rezervasyons/GetRezervasyonlar',
+                eventContent: function(arg) {
+                    let title = arg.event.title || 'Rezervasyon';
+                    let timeText = arg.timeText ? arg.timeText + ' ' : '';
+
+                    return {
+                        html: `
+                            <div class="calendar-event-badge" title="${title}">
+                                <span class="text-truncate" style="font-size: 0.8rem;">
+                                    ${timeText ? '<strong class="me-1">' + timeText + '</strong>' : ''}
+                                    ${title}
+                                </span>
+                                <i class="bi bi-eye-fill ms-1 opacity-75" style="font-size: 0.75rem;" title="Detayları Gör"></i>
+                            </div>
+                        `
+                    };
+                },
+                eventClick: function(info) {
+                    info.jsEvent.preventDefault();
+
+                    var props = info.event.extendedProps || {};
+                    var eventId = info.event.id;
+
+                    document.getElementById('modalPersonel').innerText = props.personel || info.event.title;
+                    document.getElementById('modalKaynak').innerText = props.kaynak || '-';
+                    document.getElementById('modalBaslangic').innerText = props.baslangic || info.event.startStr;
+                    document.getElementById('modalBitis').innerText = props.bitis || info.event.endStr;
+                    document.getElementById('modalAciklama').innerText = props.aciklama || '-';
+
+                    var durum = props.durum || 'Beklemede';
+                    var durumBadge = '<span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1 fw-bold">✓ Onaylandı</span>';
+                    if (durum === 'Beklemede') {
+                        durumBadge = '<span class="badge bg-warning-subtle text-warning-emphasis border border-warning-subtle rounded-pill px-3 py-1 fw-bold">⏳ Beklemede</span>';
+                    } else if (durum === 'Reddedildi') {
+                        durumBadge = '<span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-3 py-1 fw-bold">Reddedildi</span>';
+                    } else if (durum === 'İptal Edildi' || durum === 'Iptal') {
+                        durumBadge = '<span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-3 py-1 fw-bold">İptal Edildi</span>';
+                    }
+                    document.getElementById('modalDurum').innerHTML = durumBadge;
+
+                    // Action buttons
+                    var detailBtn = document.getElementById('modalDetailBtn');
+                    var editBtn = document.getElementById('modalEditBtn');
+
+                    if (eventId) {
+                        detailBtn.href = '/Rezervasyons/Details/' + eventId;
+
+                        if (props.canEditDelete) {
+                            editBtn.href = '/Rezervasyons/Edit/' + eventId;
+                            editBtn.classList.remove('d-none');
+                        } else {
+                            editBtn.classList.add('d-none');
+                        }
+                    }
+
+                    eventModal.show();
+                }
+            });
+            calendar.render();
+        });
+    </script>
+}

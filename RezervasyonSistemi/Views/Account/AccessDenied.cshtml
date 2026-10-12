@@ -1,0 +1,20 @@
+@{
+    ViewData["Title"] = "Erişim Engellendi";
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-6 text-center">
+        <div class="card shadow border-0 p-4">
+            <div class="card-body">
+                <h1 class="text-danger display-1 fw-bold">403</h1>
+                <h3 class="card-title fw-bold text-dark mb-3">Yetkisiz Erişim</h3>
+                <p class="card-text text-muted mb-4">
+                    Bu sayfayı görüntülemek veya bu işlemi gerçekleştirmek için yetkiniz bulunmamaktadır.
+                </p>
+                <a asp-controller="Home" asp-action="Index" class="btn btn-primary btn-lg">
+                    Ana Sayfaya Dön
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

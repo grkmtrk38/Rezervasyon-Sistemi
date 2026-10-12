@@ -1,0 +1,73 @@
+@model RezervasyonSistemi.Models.Rezervasyon
+
+@{
+    ViewData["Title"] = "Rezervasyon Düzenle";
+}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-7">
+        <div class="card shadow border-0 rounded-3">
+            <div class="card-header bg-primary text-white py-3">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-pencil-square me-2"></i>Rezervasyon Bilgilerini Düzenle</h5>
+            </div>
+            <div class="card-body p-4">
+                <form asp-action="Edit">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="OlusturmaTarihi" />
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="PersonelId" class="form-label fw-semibold">Personel</label>
+                            <select asp-for="PersonelId" class="form-select" asp-items="ViewBag.PersonelId"></select>
+                            <span asp-validation-for="PersonelId" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="KaynakId" class="form-label fw-semibold">Kaynak</label>
+                            <select asp-for="KaynakId" class="form-select" asp-items="ViewBag.KaynakId"></select>
+                            <span asp-validation-for="KaynakId" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label asp-for="BaslangicTarihi" class="form-label fw-semibold">Başlangıç Tarihi ve Saati</label>
+                            <input asp-for="BaslangicTarihi" class="form-control" type="datetime-local" />
+                            <span asp-validation-for="BaslangicTarihi" class="text-danger"></span>
+                        </div>
+                        <div class="col-md-6">
+                            <label asp-for="BitisTarihi" class="form-label fw-semibold">Bitiş Tarihi ve Saati</label>
+                            <input asp-for="BitisTarihi" class="form-control" type="datetime-local" />
+                            <span asp-validation-for="BitisTarihi" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Durum" class="form-label fw-semibold">Rezervasyon Durumu</label>
+                        <select asp-for="Durum" class="form-select">
+                            <option value="Onaylandı">Onaylandı</option>
+                            <option value="Beklemede">Beklemede</option>
+                            <option value="İptal Edildi">İptal Edildi</option>
+                        </select>
+                        <span asp-validation-for="Durum" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Aciklama" class="form-label fw-semibold">Açıklama</label>
+                        <textarea asp-for="Aciklama" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="Aciklama" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a asp-action="Index" class="btn btn-outline-secondary">Listeye Dön</a>
+                        <button type="submit" class="btn btn-primary fw-bold px-4">Değişiklikleri Kaydet</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

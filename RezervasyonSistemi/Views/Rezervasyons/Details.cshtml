@@ -1,0 +1,63 @@
+@model RezervasyonSistemi.Models.Rezervasyon
+
+@{
+    ViewData["Title"] = "Rezervasyon Detayı";
+}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-7">
+        <div class="card shadow border-0 rounded-3">
+            <div class="card-header bg-info text-white py-3">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-info-circle me-2"></i>Rezervasyon Detay Bilgileri</h5>
+            </div>
+            <div class="card-body p-4">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4 text-muted">Personel:</dt>
+                    <dd class="col-sm-8 fw-bold fs-5 text-dark">
+                        @(Model.Personel != null ? $"{Model.Personel.Ad} {Model.Personel.Soyad}" : "Belirtilmedi")
+                    </dd>
+
+                    <dt class="col-sm-4 text-muted">Rezerve Edilen Kaynak:</dt>
+                    <dd class="col-sm-8">
+                        <span class="badge bg-primary fs-6">@(Model.Kaynak != null ? Model.Kaynak.Ad : "Belirtilmedi")</span>
+                    </dd>
+
+                    <dt class="col-sm-4 text-muted">Başlangıç Tarihi:</dt>
+                    <dd class="col-sm-8">@Model.BaslangicTarihi.ToString("dd.MM.yyyy HH:mm")</dd>
+
+                    <dt class="col-sm-4 text-muted">Bitiş Tarihi:</dt>
+                    <dd class="col-sm-8">@Model.BitisTarihi.ToString("dd.MM.yyyy HH:mm")</dd>
+
+                    <dt class="col-sm-4 text-muted">Durum:</dt>
+                    <dd class="col-sm-8">
+                        @if (Model.Durum == "İptal Edildi" || Model.Durum == "Iptal")
+                        {
+                            <span class="badge bg-danger">İptal Edildi</span>
+                        }
+                        else if (Model.Durum == "Beklemede")
+                        {
+                            <span class="badge bg-warning text-dark">Beklemede</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-success">@(string.IsNullOrEmpty(Model.Durum) ? "Onaylandı" : Model.Durum)</span>
+                        }
+                    </dd>
+
+                    <dt class="col-sm-4 text-muted">Açıklama:</dt>
+                    <dd class="col-sm-8">@(string.IsNullOrEmpty(Model.Aciklama) ? "-" : Model.Aciklama)</dd>
+
+                    <dt class="col-sm-4 text-muted">Oluşturma Tarihi:</dt>
+                    <dd class="col-sm-8 text-muted">@Model.OlusturmaTarihi.ToString("dd.MM.yyyy HH:mm")</dd>
+                </dl>
+            </div>
+            <div class="card-footer bg-light p-3 d-flex justify-content-between">
+                <a asp-action="Index" class="btn btn-outline-secondary">Listeye Dön</a>
+                <div>
+                    <a asp-action="Takvim" class="btn btn-outline-primary me-2">Takvime Git</a>
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary fw-bold">Düzenle</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

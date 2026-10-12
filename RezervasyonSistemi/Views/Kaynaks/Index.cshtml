@@ -1,0 +1,155 @@
+@model IEnumerable<RezervasyonSistemi.Models.Kaynak>
+
+@{
+    ViewData["Title"] = "Kaynak Yönetimi";
+    var groupedKaynaklar = Model.GroupBy(k => k.Tip).ToList();
+}
+
+<style>
+    .dataTables_length select {
+        background-image: none !important;
+        -webkit-appearance: menulist !important;
+        -moz-appearance: menulist !important;
+        appearance: menulist !important;
+        padding: 0.375rem 1.5rem 0.375rem 0.75rem !important;
+    }
+</style>
+
+<div class="card shadow border-0 rounded-3 mt-3">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center py-3">
+        <h5 class="mb-0 fw-bold"><i class="bi bi-box-seam me-2"></i>Kaynak Yönetimi</h5>
+        <a asp-action="Create" class="btn btn-light btn-sm fw-bold shadow-sm">
+            <i class="bi bi-plus-lg me-1"></i> Yeni Kaynak Ekle
+        </a>
+    </div>
+    <div class="card-body p-3">
+        @if (!Model.Any())
+        {
+            <div class="d-flex flex-column align-items-center justify-content-center text-center py-5 my-2">
+                <i class="bi bi-box-seam display-3 text-secondary opacity-50 mb-2"></i>
+                <h5 class="fw-bold mt-2 mb-1">Henüz Tanımlı Kaynak Yok</h5>
+                <p class="text-muted small col-md-6 mb-3">Ekibinizin rezervasyon yapabilmesi için henüz bir toplantı salonu veya araç kaynağı eklenmemiş.</p>
+                <a asp-action="Create" class="btn btn-primary btn-sm px-4 fw-bold shadow-sm">
+                    <i class="bi bi-plus-lg me-1"></i> İlk Kaynağı Ekle
+                </a>
+            </div>
+        }
+        else
+        {
+            <!-- Dinamik Kaynak Tipi Sekmeleri (Bootstrap Nav Tabs) -->
+            <ul class="nav nav-tabs mb-3" id="kaynakTabs" role="tablist">
+                @for (int i = 0; i < groupedKaynaklar.Count; i++)
+                {
+                    var group = groupedKaynaklar[i];
+                    string tipName = string.IsNullOrEmpty(group.Key) ? "Diğer" : group.Key;
+                    string tabId = $"tab-{i}";
+                    string targetId = $"pane-{i}";
+
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link fw-bold @(i == 0 ? "active" : "")" 
+                                id="@tabId" 
+                                data-bs-toggle="tab" 
+                                data-bs-target="#@targetId" 
+                                type="button" 
+                                role="tab" 
+                                aria-controls="@targetId" 
+                                aria-selected="@(i == 0 ? "true" : "false")">
+                            📁 @tipName <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-2 py-1 ms-1">@group.Count()</span>
+                        </button>
+                    </li>
+                }
+            </ul>
+
+            <!-- Sekme İçerikleri (Tab Panes) -->
+            <div class="tab-content" id="kaynakTabContent">
+                @for (int i = 0; i < groupedKaynaklar.Count; i++)
+                {
+                    var group = groupedKaynaklar[i];
+                    string targetId = $"pane-{i}";
+                    string tabId = $"tab-{i}";
+
+                    <div class="tab-pane fade @(i == 0 ? "show active" : "")" 
+                         id="@targetId" 
+                         role="tabpanel" 
+                         aria-labelledby="@tabId">
+
+                        <div class="scrollable-table-wrapper" style="max-height: 500px; overflow-y: auto;">
+                            <table class="table table-hover table-striped align-middle mb-0 kaynak-tablosu" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <th>Kaynak Adı</th>
+                                        <th>Kaynak Tipi</th>
+                                        <th>Kapasite</th>
+                                        <th>Durum</th>
+                                        <th class="text-end">İşlemler</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var item in group)
+                                    {
+                                        <tr>
+                                            <td class="fw-semibold">@item.Ad</td>
+                                            <td>
+                                                <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-1 fw-bold">@item.Tip</span>
+                                            </td>
+                                            <td>@item.Kapasite Kişilik</td>
+                                            <td>
+                                                @if (item.Aktif)
+                                                {
+                                                    <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1 fw-bold">Aktif</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-danger-subtle text-danger border border-danger-subtle rounded-pill px-3 py-1 fw-bold">Pasif</span>
+                                                }
+                                            </td>
+                                            <td class="text-end">
+                                                <div class="btn-group btn-group-sm" role="group">
+                                                    <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-primary" title="Düzenle">Düzenle</a>
+                                                    <a asp-action="Details" asp-route-id="@item.Id" class="btn btn-outline-info" title="Detay">Detay</a>
+                                                    <a asp-action="Delete" asp-route-id="@item.Id" class="btn btn-outline-danger" title="Sil">Sil</a>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Class bazlı DataTables entegrasyonu ve Türkçe Dil Yapılandırması
+            var tables = $('.kaynak-tablosu').DataTable({
+                "language": {
+                    "lengthMenu": "Sayfada _MENU_ kayıt göster",
+                    "zeroRecords": "<div class='py-3 text-muted'><i class='bi bi-search fs-3 d-block mb-1 opacity-50'></i>Eşleşen kayıt bulunamadı</div>",
+                    "info": "_TOTAL_ kayıttan _START_ - _END_ arası gösteriliyor",
+                    "infoEmpty": "Kayıt yok",
+                    "infoFiltered": "(_MAX_ kayıt içerisinden filtrelendi)",
+                    "search": "Ara:",
+                    "paginate": {
+                        "first": "İlk",
+                        "last": "Son",
+                        "next": "Sonraki",
+                        "previous": "Önceki"
+                    }
+                },
+                "pageLength": 10,
+                "responsive": true,
+                "order": [[0, "asc"]]
+            });
+
+            // Sekmeler arası geçiş yapıldığında DataTables sütun genişliklerini otomatik hizala
+            $('button[data-bs-toggle="tab"]').on('shown.bs.tab', function (e) {
+                $.fn.dataTable.tables({ visible: true, api: true }).columns.adjust();
+            });
+        });
+    </script>
+}

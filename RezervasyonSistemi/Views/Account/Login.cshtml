@@ -1,0 +1,54 @@
+@model RezervasyonSistemi.Models.ViewModels.LoginViewModel
+
+@{
+    ViewData["Title"] = "Giriş Yap";
+}
+
+<div class="row justify-content-center mt-5">
+    <div class="col-md-5">
+        <div class="card shadow-lg border-0 rounded-lg">
+            <div class="card-header bg-primary text-white text-center py-3">
+                <h4 class="mb-0 fw-bold"><i class="bi bi-box-arrow-in-right me-2"></i>Sisteme Giriş Yap</h4>
+            </div>
+            <div class="card-body p-4">
+                <form asp-action="Login" asp-route-returnurl="@ViewData["ReturnUrl"]" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label fw-semibold"></label>
+                        <input asp-for="Email" class="form-control form-control-lg" placeholder="örnek@rezervasyon.com" autocomplete="username" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Password" class="form-label fw-semibold"></label>
+                        <input asp-for="Password" class="form-control form-control-lg" placeholder="••••••••" autocomplete="current-password" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        <input asp-for="RememberMe" class="form-check-input" />
+                        <label asp-for="RememberMe" class="form-check-label"></label>
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg fw-bold">Giriş Yap</button>
+                    </div>
+                </form>
+            </div>
+            <div class="card-footer text-center py-3 bg-light text-muted">
+                <small>🔒 Kapalı devre şirket içi rezervasyon sistemi</small>
+            </div>
+        </div>
+
+        <div class="alert alert-info mt-4 shadow-sm text-center">
+            <small class="d-block text-muted mb-1 fw-bold">Test Hesap Bilgileri:</small>
+            <div class="badge bg-danger p-2 me-1">Admin: admin@rezervasyon.com / Admin123!</div>
+            <div class="badge bg-secondary p-2">User: user@rezervasyon.com / User123!</div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

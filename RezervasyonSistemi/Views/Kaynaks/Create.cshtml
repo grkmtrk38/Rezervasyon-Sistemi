@@ -1,0 +1,56 @@
+@model RezervasyonSistemi.Models.Kaynak
+
+@{
+    ViewData["Title"] = "Yeni Kaynak Ekle";
+}
+
+<div class="row justify-content-center mt-4">
+    <div class="col-md-6">
+        <div class="card shadow border-0 rounded-3">
+            <div class="card-header bg-primary text-white py-3">
+                <h5 class="mb-0 fw-bold"><i class="bi bi-plus-circle me-2"></i>Yeni Kaynak Ekle</h5>
+            </div>
+            <div class="card-body p-4">
+                <form asp-action="Create">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="Ad" class="form-label fw-semibold">Kaynak Adı</label>
+                        <input asp-for="Ad" class="form-control" placeholder="Örn: Toplantı Salonu A, Fiat Egea" />
+                        <span asp-validation-for="Ad" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Tip" class="form-label fw-semibold">Kaynak Tipi</label>
+                        <select asp-for="Tip" class="form-select">
+                            <option value="Toplantı Salonu">Toplantı Salonu</option>
+                            <option value="Araç">Araç</option>
+                            <option value="Ekipman">Ekipman</option>
+                        </select>
+                        <span asp-validation-for="Tip" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="Kapasite" class="form-label fw-semibold">Kapasite (Kişilik / Adet)</label>
+                        <input asp-for="Kapasite" class="form-control" type="number" min="1" value="1" />
+                        <span asp-validation-for="Kapasite" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        <input class="form-check-input" asp-for="Aktif" checked />
+                        <label class="form-check-label fw-semibold" asp-for="Aktif">Kullanıma Açık (Aktif)</label>
+                    </div>
+
+                    <div class="d-flex justify-content-between mt-4">
+                        <a asp-action="Index" class="btn btn-outline-secondary">İptal / Listeye Dön</a>
+                        <button type="submit" class="btn btn-primary fw-bold px-4">Kaydet</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
